@@ -107,7 +107,7 @@ export function useServices() {
     const addService = useCallback(async ({ service, url, type, data }) => {
         // Prevent duplicates by name (case-insensitive)
         const exists = allServices.some(
-            s => s.service.toLowerCase() === name.toLowerCase()   // FIX THIS, NAME IS DEPRECATED
+            s => s.service.toLowerCase() === service.toLowerCase()
         );
         if (exists) {
             const err = new Error("A service with this name already exists.");

@@ -77,8 +77,8 @@ export default function SpeedQueenFields({
     const [isFetchingRoom, setIsFetchingRoom] = useState(false);
     const [rooms, setRooms] = useState([]);
 
-    // const [isFetchingStatus, setIsFetchingStatus] = useState(false);
-    // const [statusError, setStatusError] = useState('');
+    const [isFetchingStatus, setIsFetchingStatus] = useState(false);
+    const [statusError, setStatusError] = useState('');
     const [machinesState, setMachinesState] = useState(null);
     const [machinesStatus, setMachinesStatus] = useState('');
 
