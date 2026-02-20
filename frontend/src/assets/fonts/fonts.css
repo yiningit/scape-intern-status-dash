@@ -1,0 +1,27 @@
+@font-face {
+  font-family: 'HeadingFont';
+  src: url('./GT-Pressura-Pro-Bold.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BodyFont';
+  src: url('./Bariol_Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BodyFont';
+  src: url('./Bariol_Bold.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BodyFont';
+  src: url('./Bariol_Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
