@@ -9,10 +9,6 @@ export const fetchAllServices = async () => {
 };
 
 export const resetToDefaults = async () => {
-    // If protected with a header/secret, include it:
-    // await AXIOS.post('/services/reset-to-defaults', null, {
-    //   headers: { 'x-admin-secret': '<secret-from-.env>' }
-    // });
     const res = await AXIOS.post('/services/reset-to-defaults');
     return res?.data?.services ?? [];
 };
