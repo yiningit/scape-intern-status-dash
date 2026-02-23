@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 
@@ -27,18 +28,69 @@ import { computeSpeedQueenStatus } from '../utils/status/sqStatus';
 
 function LoginAlert ({loginState, loginMessage}) {
     const SEVERITY_MAP = {
-        fetching: {severity: 'info'},
-        valid: {severity: 'success'},
-        invalid: {severity: 'error'},
-    }
+        fetching: {
+            severity: 'info',
+            icon: <CircularProgress size={20} color="inherit" />,
+        },
+        valid: {
+            severity: 'success',
+            icon: <CheckIcon fontSize="inherit" color="inherit" />,
+        },
+        invalid: {
+            severity: 'error',
+            icon: <ClearIcon fontSize="inherit" color="inherit" />
+        },
+    };
     const config = SEVERITY_MAP[loginState];
 
     return (
-        <Alert severity={config.severity}  sx={{ mt: 1 }}>
+        <Alert severity={config.severity} icon={config.icon} sx={{ mt: 1 }}>
             {loginMessage ?? 'Error: no login message provided.'}
         </Alert>
     )
 };
+
+function MachinesAlert ({isFetchingStatus, statusError, machinesState, machinesStatus, newSvcName}) {
+    const SEVERITY_MAP = {
+        fetching: {
+            severity: 'info',
+            icon: <CircularProgress size={20} color="inherit" />,
+            message: "Fetching machine statuses...",
+        },
+        failed: {
+            severity: 'error',
+            icon: undefined,
+            message: statusError,
+        },
+        up: {
+            severity: 'success',
+            icon: <CheckIcon fontSize="inherit" color="inherit" />,
+            message: `${newSvcName}: ${machinesStatus}`,
+        },
+        down: {
+            severity: 'error',
+            icon: <ClearIcon fontSize="inherit" color="inherit" />,
+            message: `${newSvcName}: ${machinesStatus}`,
+        },
+    };
+
+    let config;
+    if (isFetchingStatus) {
+        config = SEVERITY_MAP['fetching'];
+    } else if (statusError) {
+        config = SEVERITY_MAP['failed'];
+    } else if (machinesState) {
+        config = SEVERITY_MAP['up'];
+    } else {
+        config = SEVERITY_MAP['down'];
+    }
+
+    return (
+        <Alert variant="outlined" severity={config.severity} icon={config.icon} sx={{ mt: 1 }}>
+            {config.message}
+        </Alert>
+    )
+}
 
 export default function SpeedQueenFields({
     // Field values and setters
@@ -284,7 +336,7 @@ export default function SpeedQueenFields({
     // GET to machines URL to get machine statuses
     const getMachinesStatus = useCallback(async () => {
         setStatusError('');
-        setMachinesState('');
+        setMachinesState(null);
         setMachinesStatus('');
 
         if (!roomId) return;
@@ -501,17 +553,15 @@ export default function SpeedQueenFields({
             </Box>
 
             {/* Machines status preview */}
-            <Box sx={{ mt: 1 }}>
-                {machinesState ? (
-                    <Alert variant="outlined" icon={<CheckIcon fontSize="inherit" />} severity="success">
-                        {newSvcName}: {machinesStatus}
-                    </Alert>
-                ) : (machinesState === false) ? (
-                    <Alert variant="outlined" icon={<ClearIcon fontSize="inherit" />} severity="error">
-                        {newSvcName}: {machinesStatus}
-                    </Alert>
-                ) : null}
-            </Box>
+            {(isFetchingStatus || machinesState !== null) && (
+                <MachinesAlert
+                    isFetchingStatus={isFetchingStatus}
+                    statusError={statusError}
+                    machinesState={machinesState}
+                    machinesStatus={machinesStatus}
+                    newSvcName={newSvcName}
+                />
+            )}            
         </>
     );
 }
