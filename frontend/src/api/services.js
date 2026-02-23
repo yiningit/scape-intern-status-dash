@@ -1,4 +1,3 @@
-// DEPRECATED, NOT IN USE
 // Centralises all HTTP calls for services, keeps endpoints and HTTP details out of hooks.
 
 import { AXIOS } from './axios.js';

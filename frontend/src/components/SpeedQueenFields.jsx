@@ -22,6 +22,7 @@ import {
     AXIOS_SQ_STATUSES,
     setHeaderForStatuses,
 } from '../api/axios';
+import { buildOrganisationsUrl, buildRoomsUrl, buildStatusUrl } from '../api/speedQueenUrls';
 
 import { computeSpeedQueenStatus } from '../utils/status/sqStatus';
 
@@ -140,29 +141,6 @@ export default function SpeedQueenFields({
 
     // ADD SHOW/HIDE PASSWORD FUNCTIONALITY
 
-    // Build URLs for GET requests
-    // Build GET URL for available buildings/organisations
-    const buildOrganisationsUrl = useCallback(() => {
-        if (!newUserId) return;
-        const orgs_url = `https://platform.sqinsights.com/users/${newUserId}/organizations`;
-        return orgs_url;
-    }, [newUserId]);
-
-    // Build GET URL for building's rooms
-    const buildRoomsUrl = useCallback(() => {
-        if (!newOrgId) return;
-        const rooms_url = `https://platform.sqinsights.com/paywall/organizations/${newOrgId}/locations`;
-        return rooms_url;
-    }, [newOrgId]);
-
-    // Build GET URL for machine statuses
-    const buildStatusUrl = useCallback(() => {
-        if (!roomId) return;
-        const status_url = `https://api.sqinsights.com/rooms/${roomId}/machines?roomId=${roomId}`;
-        return status_url;
-    }, [roomId]);
-
-
     // Request handlers
     // POST to login url to get authToken
     const handleLoginForToken = useCallback(async () => {
@@ -230,7 +208,7 @@ export default function SpeedQueenFields({
         }
 
         // Build URL for available buildings using user ID
-        const buildingsUrl = buildOrganisationsUrl();
+        const buildingsUrl = buildOrganisationsUrl(newUserId);
 
         setNewOrgId('');
         setRoomId('');
@@ -267,7 +245,7 @@ export default function SpeedQueenFields({
         } finally {
             setIsFetchingBuilding(false);
         }
-    }, [buildOrganisationsUrl, newSvcToken, newUserId]);
+    }, [newUserId, newSvcToken, newUserId]);
     // After login (token + user ID), fetch buildings
     useEffect(() => {
         setNewOrgId('');
@@ -286,7 +264,7 @@ export default function SpeedQueenFields({
         }
 
         // Build URL for building's rooms using organisation ID
-        const roomsUrl = buildRoomsUrl();
+        const roomsUrl = buildRoomsUrl(newOrgId);
 
         setRoomId('');
         setRooms([]);
@@ -323,7 +301,7 @@ export default function SpeedQueenFields({
         } finally {
             setIsFetchingRoom(false);
         }
-    }, [buildRoomsUrl, newSvcToken, newOrgId]);
+    }, [newOrgId, newSvcToken, newOrgId]);
     // After selecting a building, fetch rooms
     useEffect(() => {
         setRoomId('');
@@ -346,7 +324,7 @@ export default function SpeedQueenFields({
             return;
         }
 
-        const statusUrl = buildStatusUrl();
+        const statusUrl = buildStatusUrl(roomId);
         setIsFetchingStatus(true);
 
         try {
@@ -400,7 +378,8 @@ export default function SpeedQueenFields({
         } finally {
             setIsFetchingStatus(false);
         }
-    }, [buildStatusUrl, newSvcToken, roomId, setNewSvcUrl, newSvcName]);    // After selecting a room, fetch machine status
+    }, [newSvcToken, roomId, setNewSvcUrl, newSvcName]);    
+    // After selecting a room, fetch machine status
     useEffect(() => {
         if (newSvcToken && roomId) {
             getMachinesStatus();
