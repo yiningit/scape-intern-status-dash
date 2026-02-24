@@ -104,6 +104,31 @@ function App() {
     setIsModalOpen(false);
   };
 
+  // Map and handle errors
+  const mapServiceError = (err, fallbackMessage) => {
+    // Domain duplicate error from useServices.js
+    if (err?.code === 'DUPLICATE') {
+      return err.message || 'A service with this name already exists.';
+    }
+
+    // Backend responded with error
+    if (err?.response?.data?.message) {
+      return err.response.data.message;
+    }
+
+    // Network error (no response)
+    if (err?.request) {
+      return 'Network error. Please check your connection.';
+    }
+
+    // Fallback
+    if (err?.message) {
+      return err.message
+    }
+
+    return fallbackMessage || 'An unexpected error occurred.'
+  }
+
   const onSubmitNewService = async (e) => {
     e?.preventDefault();
     setFormError('');
@@ -132,7 +157,7 @@ function App() {
         await addService({ service: name, url, type: 'manual', data: {path, success} });
         setIsModalOpen(false);
       } catch (err) {
-        setFormError(err?.response?.data?.message || 'Failed to add manual service.');
+        setFormError(mapServiceError(err, "Failed to add manual service."));
       }
     } else if (newSvcType === 'speedqueen') {
       if (!newSvcToken || !newUserId) {
@@ -153,7 +178,7 @@ function App() {
         });
         setIsModalOpen(false);
       } catch (err) {
-        setFormError(err?.response?.data?.message || 'Failed to add SpeedQueen service.');
+        setFormError(mapServiceError(err, "Failed to add SpeedQueen service."));
       }
     } else {
       setFormError('Failed to set service type.')
